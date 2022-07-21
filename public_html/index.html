@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>Coffee Mashine - javaScript Homework</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="author" content="Maja Djuric">
+        <meta name="description" content="Coffee machine.">
+        <meta name="keywords" content="coffe, capuchino, espreso">
+
+        <link href="css/style.css" rel="stylesheet" type="text/css"/>
+    </head>
+    <body>
+        <div id="caffe-mashine">
+            <div id="caffe-screen" class="d-flex flex-column justify-between">
+                <p>Credit: <span id="credit">    </span>RSD</p>
+                <p id="message" class="text-center">DISPLAY MESAGE</p>
+
+                <p id="status">Water: <span id="water-status"> </span> Coffe: <span id="coffee-status"> </span> Milk: <span id="milk-status"> </span></p>
+            </div>
+            <div>
+
+            </div>
+            <button id="add-credit" class="d-block" onclick="cm.addCredit()">Add Credit</button>
+            <div class="d-flex justify-between">
+                <button id="add-water" onclick="cm.addWater()">ADD WATER</button>
+                <button id="add-coffee" onclick="cm.addCoffee()" >ADD COFFEE</button>
+                <button id="add-milk" onclick="cm.addMilk()">ADD MILK</button>
+            </div>
+            <div class="d-flex justify-between">
+                <button id="short-espresso" onclick="cm.makeShortEspresso()">Short Espreso</button>
+                <button id="long-espresso" onclick="cm.makeLongEspresso()">Long Espreso</button>
+                <button id="capuchino" onclick="cm.makeCapuchino()">Capuchino</button>
+            </div>
+        </div>
+
+
+
+        <script>
+
+            const MAX_WATER = 400;
+            const MAX_COFFEE = 200;
+            const MAX_MILK = 100;
+
+            // Create object coffeeMaschine below
+
+            let cm = {
+                water: MAX_WATER,
+                coffee: MAX_COFFEE,
+                milk: MAX_MILK,
+                credit: 100,
+                shortEspresso: {
+                    water: 20,
+                    coffee: 10,
+                    credit: 30
+                },
+                longEspresso: {
+                    water: 40,
+                    coffee: 10,
+                    credit: 40
+                },
+                capuchino: {
+                    wather: 20,
+                    coffee: 10,
+                    milk: 10,
+                    credit: 50
+                },
+                waterStatus: function () {
+                    document.getElementById('water-status').innerText = this.water;
+                },
+                addWater: function () {
+                    let water = prompt('Dodajte kolicinu vode.');
+                    if (isNaN(water) || water < 0) {
+                        return;
+                    }
+                    this.water = Math.min(this.water + parseInt(water), MAX_WATER);
+                    this.waterStatus();
+                },
+                emptyWater: function (water) {
+                    if (this.water < water) {
+                        document.getElementById("message").innerText = "Machine is out of water";
+                        return;
+                    }
+
+                    this.water -= water;
+                    this.waterStatus();
+                    document.getElementById("message").innerText = "Pouring water\n";
+                },
+                coffeeStatus: function () {
+                    document.getElementById('coffee-status').innerText = this.coffee;
+                },
+                addCoffee: function () {
+                    let coffee = prompt('Dodajte kafu.');
+                    if (isNaN(coffee) || water < 0) {
+                        return;
+                    }
+                    this.coffe = Math.min(this.coffee + parseInt(coffee), MAX_COFFEE);
+                    this.coffeeStatus();
+                },
+                emptyCoffee: function (coffee) {
+                    if (this.coffee < coffee) {
+                        document.getElementById("message").innerText = "Machine is out of coffee";
+                        return;
+                    }
+
+                    this.coffee -= coffee;
+                    this.coffeeStatus();
+                    document.getElementById("message").innerText = "Pouring coffie";
+                },
+                milkStatus: function () {
+                    document.getElementById('milk-status').innerText = this.milk;
+                },
+                addMilk: function () {
+                    let milk = prompt('Dodajte mleko.');
+                    if (isNaN(milk) || water < 0) {
+                        return;
+                    }
+                    this.milk = Math.min(this.milk + parseInt(milk), MAX_MILK);
+                    this.milkStatus();
+                },
+                emptyMilk: function (milk) {
+                    if (this.milk < milk) {
+                        document.getElementById("message").innerText = "Machine is out of milk";
+                        return;
+                    }
+
+                    this.milk -= milk;
+                    this.milkStatus();
+                    document.getElementById("message").innerText = "Pouring milk";
+                },
+                creditStatus: function () {
+                    document.getElementById('credit').innerText = this.credit;
+                },
+                addCredit: function () {
+                    let credit = prompt('Dodajte kredit.');
+                    if (isNaN(credit) || credit < 0) {
+                        return;
+                    }
+                    this.credit = this.credit + parseInt(credit);
+                    this.creditStatus();
+                },
+                emptyCredit: function (credit) {
+                    if (this.credit < credit) {
+                        document.getElementById("message").innerText = "No enough credit";
+                        return;
+                    }
+
+                    this.credit -= credit;
+                    this.creditStatus();
+                },
+                makeShortEspresso: function () {
+                    // TODO: Check credit
+                    if (this.credit < this.shortEspresso.credit) {
+                        this.emptyCredit(this.shortEspresso.credit);
+                        return;
+                    }
+
+                    if (this.water < this.shortEspresso.water) {
+                        this.emptyWater(this.shortEspresso.water);
+                        return;
+                    }
+                    if (this.coffee < this.shortEspresso.coffee) {
+                        this.emptyCoffee(this.shortEspresso.coffee);
+                        return;
+                    }
+                    document.getElementById("message").innerText = "Preparing short espresso";
+                    setTimeout(this.emptyWater.bind(this), 1000, this.shortEspresso.water);
+                    setTimeout(this.emptyCoffee.bind(this), 2000, this.shortEspresso.coffee);
+                    this.emptyCredit(this.shortEspresso.credit);
+                    setTimeout(
+                            function () {
+                                document.getElementById('message').innerText = 'Short espresso finished';
+                            },
+                            3000
+                            );
+                },
+                makeLongEspresso: function () {
+                    // TODO: Check credit
+                    if (this.credit < this.longEspresso.credit) {
+                        this.emptyCredit(this.longEspresso.credit);
+                        return;
+                    }
+
+                    if (this.water < this.longEspresso.water) {
+                        this.emptyWater(this.longEspresso.water);
+                        return;
+                    }
+                    if (this.coffee < this.longEspresso.coffee) {
+                        this.emptyCoffee(this.longEspresso.coffee);
+                        return;
+                    }
+                    document.getElementById("message").innerText = "Preparing long espresso";
+                    setTimeout(this.emptyWater.bind(this), 1000, this.longEspresso.water);
+                    setTimeout(this.emptyCoffee.bind(this), 2000, this.longEspresso.coffee);
+                    this.emptyCredit(this.longEspresso.credit);
+                    setTimeout(
+                            function () {
+                                document.getElementById('message').innerText = 'Long espresso finished';
+                            },
+                            3000
+                            );
+                },
+                makeCapuchino: function () {
+                    // TODO: Check credit
+                    if (this.credit < this.capuchino.credit) {
+                        this.emptyCredit(this.capuchino.credit);
+                        return;
+                    }
+
+                    if (this.water < this.capuchino.wather) {
+                        this.emptyWater(this.capuchino.water);
+                        return;
+                    }
+                    if (this.coffee < this.capuchino.coffee) {
+                        this.emptyCoffee(this.capuchino.coffee);
+                        return;
+                    }
+                    if (this.milk < this.capuchino.milk) {
+                        this.emptyMilk(this.capuchino.milk);
+                        return;
+                    }
+                    document.getElementById("message").innerText = "Preparing capuchino";
+                    setTimeout(this.emptyWater.bind(this), 1000, this.capuchino.wather);
+                    setTimeout(this.emptyCoffee.bind(this), 2000, this.capuchino.coffee);
+                    setTimeout(this.emptyMilk.bind(this), 3000, this.capuchino.milk);
+                    this.emptyCredit(this.capuchino.credit);
+                    setTimeout(
+                            function () {
+                                document.getElementById('message').innerText = 'Capuchino finished';
+                            },
+                            3000
+                            );
+                }
+            };
+
+            function getValue(id) {
+                return document.getElementById(id).value;
+            }
+
+            window.onload = function () {
+                cm.waterStatus();
+                cm.coffeeStatus();
+                cm.milkStatus();
+                cm.creditStatus();
+            }
+
+        </script>
+    </body>
+</html>
